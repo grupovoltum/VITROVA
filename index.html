@@ -144,6 +144,13 @@ form .btn{width:100%}
 .spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp 1s linear infinite;display:none}
 .busy .spin{display:inline-block}
 @keyframes sp{to{transform:rotate(360deg)}}
+.qlabel{font-size:14px;font-weight:500;margin:18px 0 8px;color:var(--esp)}
+.qs{display:flex;flex-wrap:wrap;gap:8px}
+.qbtn{font:400 14px Montserrat,sans-serif;color:var(--esp);background:var(--mar);border:1px solid rgba(51,38,31,.2);min-height:44px;padding:0 14px;cursor:pointer;border-radius:2px}
+.qbtn[aria-pressed=true]{background:var(--esp);color:var(--mar);border-color:var(--esp)}
+.sim{margin-top:18px;background:var(--mar);padding:14px;border:1px solid rgba(51,38,31,.12)}
+.simt{font-weight:500;font-size:15px;margin-bottom:10px}
+.sim img{width:100%;height:auto}
 @media(max-width:860px){.ptop,.pwork.on{grid-template-columns:minmax(0,1fr)}}
 @media(prefers-reduced-motion:reduce){.spin{animation:none}}
 /* faq */
@@ -313,7 +320,7 @@ footer .legal{border-top:1px solid #4a3a31;margin-top:36px;padding-top:20px;font
       <label class="drop" id="drop" for="foto">
         <svg viewBox="0 0 40 40" fill="none" stroke="#6B5040" stroke-width="1.6"><rect x="4" y="9" width="32" height="24" rx="2"/><circle cx="14" cy="17" r="3"/><path d="M4 29l9-8 7 6 5-4 11 9"/></svg>
         <b>Subí o arrastrá una foto</b>
-        <span>JPG o PNG. Se usa solo para mostrarte el resultado y no se guarda.</span>
+        <span id="dropMsg">JPG o PNG. La foto se adjunta a tu consulta para que podamos asesorarte.</span>
         <input type="file" id="foto" accept="image/*">
       </label>
     </div>
@@ -329,10 +336,18 @@ footer .legal{border-top:1px solid #4a3a31;margin-top:36px;padding-top:20px;font
         </div>
         <p class="status" id="pstatus">Arrastrá los cuatro puntos hasta las esquinas de la ducha de tu baño: arriba a la altura de la mampara, abajo sobre el piso o el borde de la bañera.</p>
         <div class="chips" id="chips">Herrajes:</div>
+        <p class="qlabel">¿Cómo es tu ducha?</p>
+        <div class="qs" id="qs"></div>
       </div>
       <div>
         <div class="cmp4" id="cmp4"></div>
         <p class="status">Tocá el modelo que más te guste y lo sumamos a tu consulta.</p>
+        <div class="sim" id="sim" hidden>
+          <p class="simt" id="simTitle">Así quedaría tu baño</p>
+          <img id="simImg" alt="Simulación de tu baño con la mampara elegida">
+          <div class="pctrl"><a class="btn line" id="simDl" href="#" download="vitrova-simulacion.jpg">Descargar imagen</a></div>
+          <p class="status">Esta imagen y tu foto se adjuntan automáticamente a la consulta.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -362,7 +377,7 @@ footer .legal{border-top:1px solid #4a3a31;margin-top:36px;padding-top:20px;font
         <label class="check"><input type="checkbox" id="acepto" required><span>Acepto la <button type="button" class="linkbtn" data-open="priv">política de privacidad</button> y que Vitrova me contacte por WhatsApp o email.</span></label>
         <p class="err" id="err">Completá nombre, WhatsApp, email, ciudad, modelo y aceptá la política de privacidad.</p>
         <button class="btn dark" type="submit">Quiero mi cotización</button>
-        <p class="small">Tus datos solo se usan para responder tu consulta.</p>
+        <p class="small">Tus datos y tu foto solo se usan para responder tu consulta.</p>
       </div>
       <div class="ok" id="ok" role="status"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzNTIuMCAzNjAuMCIgd2lkdGg9IjM1MiIgaGVpZ2h0PSIzNjAiPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0zMCwtMTApIj4KPGc+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImdnaWxpZ2h0IiB4MT0iNjAiIHkxPSI0MCIgeDI9IjIyNCIgeTI9IjMzMCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI0YzRjdGNyIgc3RvcC1vcGFjaXR5PSIwLjg1Ii8+PHN0b3Agb2Zmc2V0PSIuNSIgc3RvcC1jb2xvcj0iI0M2RDZENyIgc3RvcC1vcGFjaXR5PSIwLjU1Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjQThCRUMwIiBzdG9wLW9wYWNpdHk9IjAuNzUiLz48L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJhZ2lsaWdodCIgeDE9IjI0NyIgeTE9IjE5MCIgeDI9IjI5MS40IiB5Mj0iMjA1LjciIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM2QzcwNzQiLz48c3RvcCBvZmZzZXQ9IjAuMSIgc3RvcC1jb2xvcj0iI0FFQjJCNSIvPjxzdG9wIG9mZnNldD0iMC4yOCIgc3RvcC1jb2xvcj0iI0YxRjJGMyIvPjxzdG9wIG9mZnNldD0iMC40NiIgc3RvcC1jb2xvcj0iI0E5QUNBRiIvPjxzdG9wIG9mZnNldD0iMC42MiIgc3RvcC1jb2xvcj0iI0Q4REFEQyIvPjxzdG9wIG9mZnNldD0iMC44IiBzdG9wLWNvbG9yPSIjQkZDMkM1Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjN0E3RTgyIi8+PC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYWhpbGlnaHQiIHgxPSIwIiB5MT0iNDAiIHgyPSIwIiB5Mj0iMzQwIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI0ZGRkZGRiIgc3RvcC1vcGFjaXR5PSIuMTgiLz48c3RvcCBvZmZzZXQ9Ii41IiBzdG9wLWNvbG9yPSIjRkZGRkZGIiBzdG9wLW9wYWNpdHk9IjAiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMDAwMDAwIiBzdG9wLW9wYWNpdHk9Ii4xMiIvPjwvbGluZWFyR3JhZGllbnQ+CiAgICA8Y2xpcFBhdGggaWQ9ImdjaWxpZ2h0Ij48cG9seWdvbiBwb2ludHM9IjYwLDQwIDE1Miw0MCAyMjQsMzMwIDIwMCwzMzAiLz48L2NsaXBQYXRoPgogICAgPGNsaXBQYXRoIGlkPSJhY2lsaWdodCI+PHBvbHlnb24gcG9pbnRzPSIxOTYsMzQwIDI0NiwzNDAgMzUyLDQwIDMwMiw0MCIvPjwvY2xpcFBhdGg+CiAgPC9kZWZzPgogIDwhLS0gSE9KQSBERSBWSURSSU8gLS0+CiAgPHBvbHlnb24gcG9pbnRzPSI2MCw0MCAxNTIsNDAgMjI0LDMzMCAyMDAsMzMwIiBmaWxsPSJ1cmwoI2dnaWxpZ2h0KSIvPgogIDxnIGNsaXAtcGF0aD0idXJsKCNnY2lsaWdodCkiPgogICAgPHBvbHlnb24gcG9pbnRzPSI2MCw0MCAxNTIsNDAgMjI0LDMzMCAyMDAsMzMwIiBmaWxsPSJub25lIiBzdHJva2U9IiM5REI3QjUiIHN0cm9rZS1vcGFjaXR5PSIwLjU1IiBzdHJva2Utd2lkdGg9IjEwIi8+CiAgICA8cG9seWdvbiBwb2ludHM9IjExMiw0MCAxMzAsNDAgNzAsMzMwIDUyLDMzMCIgZmlsbD0iI0ZGRkZGRiIgZmlsbC1vcGFjaXR5PSIwLjc1Ii8+CiAgICA8cG9seWdvbiBwb2ludHM9IjEzNyw0MCAxNDIsNDAgODIsMzMwIDc3LDMzMCIgZmlsbD0iI0ZGRkZGRiIgZmlsbC1vcGFjaXR5PSIwLjUyIi8+CiAgICA8cG9seWdvbiBwb2ludHM9IjE2MCw0MCAyMDAsNDAgMTQwLDMzMCAxMDAsMzMwIiBmaWxsPSIjRkZGRkZGIiBmaWxsLW9wYWNpdHk9IjAuMTciLz4KICA8L2c+CiAgPHBvbHlnb24gcG9pbnRzPSI2MCw0MCAxNTIsNDAgMjI0LDMzMCAyMDAsMzMwIiBmaWxsPSJub25lIiBzdHJva2U9IiM3RTk2OTgiIHN0cm9rZS1vcGFjaXR5PSIxIiBzdHJva2Utd2lkdGg9IjIuNCIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIvPgogIDwhLS0gc29tYnJhIGRlbCB2aWRyaW8gYWwgZW50cmFyIGVuIGVsIHBlcmZpbCAtLT4KICA8ZyBjbGlwLXBhdGg9InVybCgjYWNpbGlnaHQpIj48cG9seWdvbiBwb2ludHM9IjE5NiwzNDAgMjQ2LDM0MCAzNTIsNDAgMzAyLDQwIiBmaWxsPSJ1cmwoI2FnaWxpZ2h0KSIvPjwvZz4KICA8IS0tIFBFUkZJTCBERSBBTFVNSU5JTyAtLT4KICA8ZyBjbGlwLXBhdGg9InVybCgjYWNpbGlnaHQpIj4KICAgIDxsaW5lIHgxPSIyMDIiIHkxPSIzNDAiIHgyPSIzMDgiIHkyPSI0MCIgc3Ryb2tlPSIjNUE1RTYyIiBzdHJva2Utb3BhY2l0eT0iMC4xIiBzdHJva2Utd2lkdGg9Ii44Ii8+PGxpbmUgeDE9IjIwNyIgeTE9IjM0MCIgeDI9IjMxMyIgeTI9IjQwIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS1vcGFjaXR5PSIwLjE2IiBzdHJva2Utd2lkdGg9Ii44Ii8+PGxpbmUgeDE9IjIxMyIgeTE9IjM0MCIgeDI9IjMxOSIgeTI9IjQwIiBzdHJva2U9IiM1QTVFNjIiIHN0cm9rZS1vcGFjaXR5PSIwLjIyIiBzdHJva2Utd2lkdGg9Ii44Ii8+PGxpbmUgeDE9IjIxOSIgeTE9IjM0MCIgeDI9IjMyNSIgeTI9IjQwIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS1vcGFjaXR5PSIwLjEiIHN0cm9rZS13aWR0aD0iLjgiLz48bGluZSB4MT0iMjI1IiB5MT0iMzQwIiB4Mj0iMzMxIiB5Mj0iNDAiIHN0cm9rZT0iIzVBNUU2MiIgc3Ryb2tlLW9wYWNpdHk9IjAuMTYiIHN0cm9rZS13aWR0aD0iLjgiLz48bGluZSB4MT0iMjMxIiB5MT0iMzQwIiB4Mj0iMzM3IiB5Mj0iNDAiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLW9wYWNpdHk9IjAuMjIiIHN0cm9rZS13aWR0aD0iLjgiLz48bGluZSB4MT0iMjM3IiB5MT0iMzQwIiB4Mj0iMzQzIiB5Mj0iNDAiIHN0cm9rZT0iIzVBNUU2MiIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIuOCIvPjxsaW5lIHgxPSIyNDIiIHkxPSIzNDAiIHgyPSIzNDgiIHkyPSI0MCIgc3Ryb2tlPSIjRkZGRkZGIiBzdHJva2Utb3BhY2l0eT0iMC4xNiIgc3Ryb2tlLXdpZHRoPSIuOCIvPgogICAgPHBvbHlnb24gcG9pbnRzPSIxOTYsMzQwIDI0NiwzNDAgMzUyLDQwIDMwMiw0MCIgZmlsbD0idXJsKCNhaGlsaWdodCkiLz4KICAgIDxsaW5lIHgxPSIyMTEiIHkxPSIzNDAiIHgyPSIzMTciIHkyPSI0MCIgc3Ryb2tlPSIjNEU1MjU2IiBzdHJva2Utb3BhY2l0eT0iLjU1IiBzdHJva2Utd2lkdGg9IjIuMiIvPgogICAgPGxpbmUgeDE9IjIxMy40IiB5MT0iMzQwIiB4Mj0iMzE5LjQiIHkyPSI0MCIgc3Ryb2tlPSIjRkZGRkZGIiBzdHJva2Utb3BhY2l0eT0iLjciIHN0cm9rZS13aWR0aD0iMS4yIi8+CiAgPC9nPgogIDxwb2x5Z29uIHBvaW50cz0iMTk2LDM0MCAyNDYsMzQwIDM1Miw0MCAzMDIsNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzVGNjM2NyIgc3Ryb2tlLW9wYWNpdHk9IjAuMzUiIHN0cm9rZS13aWR0aD0iMSIvPgo8L2c+PC9nPjwvc3ZnPg==" alt=""><h3>¡Gracias! Recibimos tu consulta.</h3><p class="lead" style="margin:10px auto 0">Te escribimos por WhatsApp con tu cotización. Mientras tanto, podés ver cómo medir tu baño en nuestras preguntas frecuentes.</p></div>
     </form>
@@ -400,7 +415,7 @@ footer .legal{border-top:1px solid #4a3a31;margin-top:36px;padding-top:20px;font
     <h3 id="privt">Política de privacidad</h3>
     <p>Vitrova, unidad de negocio de Acquajet (Córdoba, Argentina), trata los datos personales que nos enviás conforme a la Ley 25.326 de Protección de los Datos Personales.</p>
     <h4>Qué datos recopilamos</h4><p>Nombre, teléfono, email, ciudad y los datos de tu baño que completes en el formulario.</p>
-    <h4>Fotos del probador</h4><p>La foto que subís al probador virtual se usa solo para mostrarte la mampara sobre tu baño. Si usás la ubicación automática, la imagen se procesa con un servicio de inteligencia artificial para ubicar la ducha de tu baño. No la guardamos ni la asociamos a tu consulta.</p>
+    <h4>Fotos del probador</h4><p>Si subís una foto de tu baño al probador virtual, al enviar la consulta guardamos esa foto y la simulación con la mampara junto con tus datos, para poder asesorarte y cotizar. Si usás la ubicación automática, la imagen se procesa con un servicio de inteligencia artificial. Podés pedir que las borremos cuando quieras.</p>
     <h4>Para qué los usamos</h4><p>Para responder tu consulta, enviarte la cotización y coordinar la entrega o la instalación. No los vendemos ni los cedemos a terceros, salvo al instalador asignado a tu obra.</p>
     <h4>Cookies y medición</h4><p>Usamos Google Tag Manager y herramientas de analítica para medir de forma agregada cómo se usa el sitio y la efectividad de nuestros anuncios.</p>
     <h4>Tus derechos</h4><p>Podés pedir acceso, rectificación o supresión de tus datos escribiéndonos. La Agencia de Acceso a la Información Pública, órgano de control de la Ley 25.326, atiende las denuncias por incumplimiento.</p>
@@ -437,16 +452,31 @@ footer .legal{border-top:1px solid #4a3a31;margin-top:36px;padding-top:20px;font
   const form = document.getElementById('lead'), err = document.getElementById('err');
   let started = false;
   form.addEventListener('input', () => { if (!started) { started = true; dl.push({event:'form_start'}); } });
-  form.addEventListener('submit', e => {
+  const sendBtn = form.querySelector('button[type=submit]');
+  form.addEventListener('submit', async e => {
     e.preventDefault();
     const req = ['nombre','tel','email','ciudad','tipo'].map(id => document.getElementById(id));
     const okEmail = /.+@.+\..+/.test(document.getElementById('email').value);
     const valid = req.every(i => i.value.trim()) && okEmail && document.getElementById('acepto').checked;
     err.style.display = valid ? 'none' : 'block';
     if (!valid) return;
-    dl.push({event:'generate_lead', form_modelo:document.getElementById('tipo').value, form_ciudad:document.getElementById('ciudad').value, form_instalacion:form.inst.value});
-    document.getElementById('fields').style.display = 'none';
-    document.getElementById('ok').style.display = 'block';
+    const v = id => document.getElementById(id).value.trim();
+    const datos = { nombre: v('nombre'), tel: v('tel'), email: v('email'), ciudad: v('ciudad'), tipo: v('tipo'),
+      ancho_cm: v('ancho') ? Number(v('ancho')) : null, instalacion: form.inst.value, mensaje: v('msg'),
+      origen: location.href.split('#')[0] };
+    sendBtn.disabled = true; sendBtn.textContent = 'Enviando…';
+    try {
+      const adj = window.vitrovaProbador ? await window.vitrovaProbador.adjuntos() : null;
+      if (adj) Object.assign(datos, adj);
+      if (window.vitrovaGuardar) await window.vitrovaGuardar(datos);
+      dl.push({event:'generate_lead', form_modelo:datos.tipo, form_ciudad:datos.ciudad, form_instalacion:datos.instalacion, form_con_foto: !!(adj && adj.foto)});
+      document.getElementById('fields').style.display = 'none';
+      document.getElementById('ok').style.display = 'block';
+    } catch (ex) {
+      console.error(ex);
+      err.innerHTML = 'No pudimos enviar tu consulta. Probá de nuevo o escribinos por <a class="wa-link" href="https://wa.me/5493516425148?text=Hola%20Vitrova%2C%20quiero%20cotizar%20una%20mampara">WhatsApp</a>.';
+      err.style.display = 'block';
+    } finally { sendBtn.disabled = false; sendBtn.textContent = 'Quiero mi cotización'; }
   });
 }
 </script>
@@ -461,10 +491,17 @@ footer .legal{border-top:1px solid #4a3a31;margin-top:36px;padding-top:20px;font
     {n:'Cromo', c:'#BFC3C7'}, {n:'Negro mate', c:'#1E1E1E'},
     {n:'Acero cepillado', c:'#8E9296'}, {n:'Dorado', c:'#B8945A'}
   ];
+  const QUESTIONS = [
+    {t:'Ducha de pared a pared', k:'corrediza', m:'en una ducha de pared a pared, la corrediza no ocupa espacio al abrir.'},
+    {t:'Ducha en un rincón', k:'box', m:'en un rincón con dos lados abiertos, el box cierra los dos frentes.'},
+    {t:'Bañera', k:'rebatible', m:'sobre bañera, la rebatible deja entrar cómodo y no lleva riel arriba.'},
+    {t:'Ducha abierta / walk-in', k:'pano', m:'en una ducha abierta, el paño fijo es lo más simple y limpio.'}
+  ];
   const DEF = [[.27,.16],[.73,.16],[.73,.9],[.27,.9]];
-  let quad = DEF.map(p => p.slice()), color = COLORS[0].c, chosen = null, recom = null, imgURL = null;
+  let quad = DEF.map(p => p.slice()), color = COLORS[0], chosen = null, recom = null, recomMsg = '', imgURL = null, photoCanvas = null;
+  const nameOf = k => (TYPES.find(t => t.k === k) || {}).n || '';
 
-  // ---- dibujo de cada mampara en un lienzo de 400 x 600 ----
+  // ---- dibujo vectorial (SVG para la vista en vivo) ----
   const glass = 'fill="rgba(214,230,230,.30)"';
   const refl = (x) => `<polygon points="${x},0 ${x+40},0 ${x-60},600 ${x-100},600" fill="#fff" opacity=".28"/><polygon points="${x+56},0 ${x+66},0 ${x-34},600 ${x-44},600" fill="#fff" opacity=".22"/>`;
   function svgFor(k, c) {
@@ -494,7 +531,29 @@ footer .legal{border-top:1px solid #4a3a31;margin-top:36px;padding-top:20px;font
     return `<svg class="ov" viewBox="0 0 400 600" preserveAspectRatio="none" width="400" height="600" xmlns="http://www.w3.org/2000/svg">${b}</svg>`;
   }
 
-  // ---- homografía: rectángulo 400x600 -> cuadrilátero (matrix3d) ----
+  // ---- el mismo dibujo en Canvas 2D (para generar la imagen final) ----
+  function drawMampara(ctx, k, c) {
+    const G = 'rgba(214,230,230,.30)';
+    const rect = (x, y, w, h, fill, stroke) => { if (fill) { ctx.fillStyle = fill; ctx.fillRect(x, y, w, h); } if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 3; ctx.strokeRect(x, y, w, h); } };
+    const poly = (pts, fill, alpha = 1, stroke) => { ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.closePath(); ctx.globalAlpha = alpha; ctx.fillStyle = fill; ctx.fill(); ctx.globalAlpha = 1; if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 3; ctx.stroke(); } };
+    const dot = (x, y, r) => { ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fillStyle = c; ctx.fill(); };
+    const rr = (x, y, w, h) => { ctx.fillStyle = c; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, w, h, 3) : ctx.rect(x, y, w, h); ctx.fill(); };
+    const rf = (x) => { poly([[x,0],[x+40,0],[x-60,600],[x-100,600]], '#fff', .28); poly([[x+56,0],[x+66,0],[x-34,600],[x-44,600]], '#fff', .22); };
+    if (k === 'pano') {
+      rect(0, 0, 270, 600, G, c); rf(150); rect(0, 0, 9, 600, c); rect(0, 590, 270, 10, c); rect(268, 34, 132, 7, c); dot(268, 37, 7);
+    } else if (k === 'corrediza') {
+      rect(0, 0, 400, 14, c); rect(4, 14, 214, 580, G, c); rect(186, 20, 210, 574, G, c); rf(120); rf(330);
+      dot(215, 10, 8); dot(370, 10, 8); rr(198, 250, 7, 100); rect(0, 592, 400, 8, c);
+    } else if (k === 'rebatible') {
+      rect(8, 0, 388, 600, G, c); rf(220); rr(0, 70, 26, 46); rr(0, 484, 26, 46); rr(362, 250, 8, 100);
+    } else {
+      poly([[330,0],[400,40],[400,600],[330,600]], 'rgba(200,216,216,.38)', 1, c);
+      rect(0, 0, 334, 12, c); rect(4, 12, 180, 584, G, c); rect(160, 18, 170, 578, G, c); rf(110); rf(290);
+      rect(326, 0, 9, 600, c); rr(172, 250, 7, 100); rect(0, 592, 334, 8, c);
+    }
+  }
+
+  // ---- homografía para la vista en vivo (CSS matrix3d) ----
   function solve(A, b) {
     const n = b.length;
     for (let i = 0; i < n; i++) {
@@ -518,23 +577,81 @@ footer .legal{border-top:1px solid #4a3a31;margin-top:36px;padding-top:20px;font
     return `matrix3d(${h[0]},${h[3]},0,${h[6]},${h[1]},${h[4]},0,${h[7]},0,0,1,0,${h[2]},${h[5]},0,1)`;
   }
 
-  // ---- escenarios ----
+  // ---- imagen final: foto + mampara en perspectiva (WebGL, sin costuras) ----
+  function warp(srcCanvas, dstPts, W, H) {
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const gl = cv.getContext('webgl', {premultipliedAlpha: true, preserveDrawingBuffer: true});
+    if (!gl) return null;
+    const vs = 'attribute vec2 p;attribute vec3 t;varying vec3 v;void main(){v=t;gl_Position=vec4(p,0.,1.);}';
+    const fs = 'precision mediump float;varying vec3 v;uniform sampler2D s;void main(){gl_FragColor=texture2D(s,v.xy/v.z);}';
+    const sh = (type, src) => { const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); return o; };
+    const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(pr); gl.useProgram(pr);
+    // q por vértice a partir de la intersección de diagonales
+    const [p0, p1, p2, p3] = dstPts;
+    const cross = (a, b) => a[0] * b[1] - a[1] * b[0], sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
+    const r = sub(p2, p0), s2 = sub(p3, p1), den = cross(r, s2);
+    let q = [1, 1, 1, 1];
+    if (Math.abs(den) > 1e-6) {
+      const tt = cross(sub(p1, p0), s2) / den, c = [p0[0] + tt * r[0], p0[1] + tt * r[1]];
+      const d = dstPts.map(p => Math.hypot(p[0] - c[0], p[1] - c[1]));
+      q = [0, 1, 2, 3].map(i => (d[i] + d[(i + 2) % 4]) / d[(i + 2) % 4]);
+      if (q.some(n => !isFinite(n) || n <= 0)) q = [1, 1, 1, 1];
+    }
+    const uv = [[0,0],[1,0],[1,1],[0,1]];
+    const data = [];
+    [0, 1, 2, 0, 2, 3].forEach(i => { const [x, y] = dstPts[i]; data.push(x / W * 2 - 1, 1 - y / H * 2, uv[i][0] * q[i], uv[i][1] * q[i], q[i]); });
+    const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW);
+    const lp = gl.getAttribLocation(pr, 'p'), lt = gl.getAttribLocation(pr, 't');
+    gl.enableVertexAttribArray(lp); gl.vertexAttribPointer(lp, 2, gl.FLOAT, false, 20, 0);
+    gl.enableVertexAttribArray(lt); gl.vertexAttribPointer(lt, 3, gl.FLOAT, false, 20, 8);
+    const tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, srcCanvas);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.viewport(0, 0, W, H); gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    return cv;
+  }
+  function composite(k, maxSide = 1400) {
+    if (!photoCanvas) return null;
+    const sc = Math.min(1, maxSide / Math.max(photoCanvas.width, photoCanvas.height));
+    const W = Math.round(photoCanvas.width * sc), H = Math.round(photoCanvas.height * sc);
+    const out = document.createElement('canvas'); out.width = W; out.height = H;
+    const ctx = out.getContext('2d'); ctx.drawImage(photoCanvas, 0, 0, W, H);
+    const m = document.createElement('canvas'); m.width = 800; m.height = 1200;
+    const mc = m.getContext('2d'); mc.scale(2, 2); drawMampara(mc, k, color.c);
+    const w = warp(m, quad.map(([x, y]) => [x * W, y * H]), W, H);
+    if (w) { ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.22)'; ctx.shadowBlur = 10; ctx.shadowOffsetY = 4; ctx.drawImage(w, 0, 0); ctx.restore(); }
+    // firma de marca
+    const fs = Math.max(14, Math.round(W * 0.022));
+    ctx.font = `500 ${fs}px Montserrat, Arial, sans-serif`;
+    const label = `VITROVA · ${nameOf(k).toUpperCase()} · ${color.n.toUpperCase()}`;
+    const tw = ctx.measureText(label).width, pad = fs * .7;
+    ctx.fillStyle = 'rgba(51,38,31,.86)'; ctx.fillRect(W - tw - pad * 3, H - fs - pad * 3, tw + pad * 2, fs + pad * 1.6);
+    ctx.fillStyle = '#F4F1EC'; ctx.fillText(label, W - tw - pad * 2, H - pad * 2.25);
+    return out;
+  }
+  const toJpeg = (cv, q) => cv.toDataURL('image/jpeg', q);
+
+  // ---- escenarios en vivo ----
   const pwork = document.getElementById('pwork'), stageMain = document.getElementById('stageMain');
-  const photoMain = document.getElementById('photoMain'), ovMain = document.getElementById('ovMain');
+  const photoMain = document.getElementById('photoMain');
   const cmp4 = document.getElementById('cmp4'), status = document.getElementById('pstatus');
+  const sim = document.getElementById('sim'), simImg = document.getElementById('simImg'), simDl = document.getElementById('simDl');
   cmp4.innerHTML = TYPES.map(t => `<button type="button" class="tile" data-k="${t.k}" aria-pressed="false"><em hidden>Recomendada</em><div class="stage"><img alt=""><div class="ovwrap"></div></div><strong>${t.n}</strong></button>`).join('');
   const tiles = [...cmp4.querySelectorAll('.tile')];
+  const current = () => chosen || recom || 'corrediza';
 
   function render() {
-    const mainK = chosen || recom || 'corrediza';
     const paint = (stage, k) => {
       const w = stage.clientWidth, h = stage.clientHeight; if (!w || !h) return;
       const wrap = stage.querySelector('.ovwrap');
       const m = matrix(quad.map(([x, y]) => [x * w, y * h]));
-      wrap.innerHTML = svgFor(k, color);
+      wrap.innerHTML = svgFor(k, color.c);
       if (m) wrap.firstChild.style.transform = m;
     };
-    paint(stageMain, mainK);
+    paint(stageMain, current());
     tiles.forEach(t => paint(t.querySelector('.stage'), t.dataset.k));
     stageMain.querySelectorAll('.h').forEach(hd => {
       const [x, y] = quad[+hd.dataset.i];
@@ -543,10 +660,30 @@ footer .legal{border-top:1px solid #4a3a31;margin-top:36px;padding-top:20px;font
   }
   const ro = new ResizeObserver(render); ro.observe(stageMain);
 
+  let simTimer = null;
+  function updateSim() {
+    clearTimeout(simTimer);
+    simTimer = setTimeout(() => {
+      if (!photoCanvas || !(chosen || recom)) { sim.hidden = true; return; }
+      const cv = composite(current(), 1400);
+      if (!cv) return;
+      const url = toJpeg(cv, .88);
+      simImg.src = url; simDl.href = url; simDl.download = `vitrova-${current()}.jpg`;
+      document.getElementById('simTitle').textContent = `Así quedaría tu baño con ${nameOf(current()).toLowerCase()}`;
+      sim.hidden = false;
+    }, 120);
+  }
+  function setRecom(k, msg) {
+    recom = k; recomMsg = msg || '';
+    const ts = document.getElementById('tipo'); if (!chosen && k) ts.value = nameOf(k);
+    tiles.forEach(t => t.querySelector('em').hidden = t.dataset.k !== recom);
+    render(); updateSim();
+  }
+
   // arrastre de esquinas
   stageMain.querySelectorAll('.h').forEach(hd => {
     hd.addEventListener('pointerdown', e => { hd.setPointerCapture(e.pointerId); hd.dataset.drag = '1'; });
-    hd.addEventListener('pointerup', () => { hd.dataset.drag = ''; dl.push({event:'probador_ajuste'}); });
+    hd.addEventListener('pointerup', () => { hd.dataset.drag = ''; dl.push({event:'probador_ajuste'}); updateSim(); });
     hd.addEventListener('pointermove', e => {
       if (!hd.dataset.drag) return;
       const r = stageMain.getBoundingClientRect();
@@ -555,7 +692,7 @@ footer .legal{border-top:1px solid #4a3a31;margin-top:36px;padding-top:20px;font
     });
     hd.addEventListener('keydown', e => {
       const d = {ArrowLeft:[-.01,0], ArrowRight:[.01,0], ArrowUp:[0,-.01], ArrowDown:[0,.01]}[e.key]; if (!d) return;
-      e.preventDefault(); const p = quad[+hd.dataset.i]; p[0] = Math.min(1, Math.max(0, p[0] + d[0])); p[1] = Math.min(1, Math.max(0, p[1] + d[1])); render();
+      e.preventDefault(); const p = quad[+hd.dataset.i]; p[0] = Math.min(1, Math.max(0, p[0] + d[0])); p[1] = Math.min(1, Math.max(0, p[1] + d[1])); render(); updateSim();
     });
   });
 
@@ -564,45 +701,93 @@ footer .legal{border-top:1px solid #4a3a31;margin-top:36px;padding-top:20px;font
   COLORS.forEach((c, i) => {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.style.background = c.c;
     b.setAttribute('aria-label', c.n); b.title = c.n; b.setAttribute('aria-pressed', i === 0);
-    b.addEventListener('click', () => { color = c.c; chips.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', x === b)); render(); });
+    b.addEventListener('click', () => { color = c; chips.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', x === b)); render(); updateSim(); });
     chips.appendChild(b);
+  });
+
+  // preguntas rápidas: recomendación sin IA
+  const qs = document.getElementById('qs');
+  QUESTIONS.forEach(q => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'qbtn'; b.textContent = q.t; b.setAttribute('aria-pressed', 'false');
+    b.addEventListener('click', () => {
+      qs.querySelectorAll('.qbtn').forEach(x => x.setAttribute('aria-pressed', x === b));
+      setRecom(q.k, q.m);
+      status.innerHTML = `Te recomendamos <b>${nameOf(q.k)}</b>: ${q.m} Tocá un modelo para elegirlo.`;
+      dl.push({event:'probador_recomendacion', recomendada: nameOf(q.k), origen:'preguntas'});
+    });
+    qs.appendChild(b);
   });
 
   // elegir modelo -> formulario
   const tipoSel = document.getElementById('tipo'), probado = document.getElementById('probado');
   tiles.forEach(t => t.addEventListener('click', () => {
-    chosen = t.dataset.k; const name = TYPES.find(x => x.k === chosen).n;
+    chosen = t.dataset.k; const name = nameOf(chosen);
     tiles.forEach(x => x.setAttribute('aria-pressed', x === t));
     tipoSel.value = name; probado.value = name;
-    status.innerHTML = `Elegiste <b>${name}</b>. Lo sumamos a tu consulta: completá tus datos abajo.`;
-    dl.push({event:'probador_modelo', modelo: name}); render();
+    status.innerHTML = `Elegiste <b>${name}</b>. Tu simulación se adjunta a la consulta: completá tus datos abajo.`;
+    dl.push({event:'probador_modelo', modelo: name}); render(); updateSim();
   }));
 
-  // carga de foto (reducida a 1400 px)
+  // carga de foto (reducida a 1400 px; compatible con Safari)
+  function decode(file) {
+    return new Promise((res, rej) => {
+      const u = URL.createObjectURL(file), im = new Image();
+      im.onload = () => res({im, u}); im.onerror = () => { URL.revokeObjectURL(u); rej(new Error('decode')); };
+      im.src = u;
+    });
+  }
   async function loadFile(file) {
-    if (!file || !file.type.startsWith('image/')) return;
-    const bmp = await createImageBitmap(file);
-    const sc = Math.min(1, 1400 / Math.max(bmp.width, bmp.height));
-    const cv = document.createElement('canvas'); cv.width = Math.round(bmp.width * sc); cv.height = Math.round(bmp.height * sc);
-    cv.getContext('2d').drawImage(bmp, 0, 0, cv.width, cv.height);
-    const blob = await new Promise(r => cv.toBlob(r, 'image/jpeg', .86));
+    if (!file) return;
+    let im, u;
+    try { ({im, u} = await decode(file)); }
+    catch (e) {
+      pwork.classList.remove('on');
+      document.getElementById('dropMsg').textContent = 'No pudimos abrir esa imagen. Si es una foto HEIC de iPhone, sacala en «Más compatible» (JPG) o mandanos una captura.';
+      return;
+    }
+    const sc = Math.min(1, 1400 / Math.max(im.naturalWidth, im.naturalHeight));
+    photoCanvas = document.createElement('canvas');
+    photoCanvas.width = Math.round(im.naturalWidth * sc); photoCanvas.height = Math.round(im.naturalHeight * sc);
+    photoCanvas.getContext('2d').drawImage(im, 0, 0, photoCanvas.width, photoCanvas.height);
+    URL.revokeObjectURL(u);
+    const blob = await new Promise(r => photoCanvas.toBlob(r, 'image/jpeg', .86));
     if (imgURL) URL.revokeObjectURL(imgURL);
     imgURL = URL.createObjectURL(blob); window.__vitrovaFoto = blob;
-    [photoMain, ...tiles.map(t => t.querySelector('img'))].forEach(im => { im.src = imgURL; im.onload = render; });
-    quad = DEF.map(p => p.slice()); recom = null; tiles.forEach(t => t.querySelector('em').hidden = true);
+    [photoMain, ...tiles.map(t => t.querySelector('img'))].forEach(x => { x.onload = render; x.src = imgURL; });
+    quad = DEF.map(p => p.slice()); chosen = null; recom = null; recomMsg = '';
+    tiles.forEach(t => { t.querySelector('em').hidden = true; t.setAttribute('aria-pressed', 'false'); });
+    qs.querySelectorAll('.qbtn').forEach(x => x.setAttribute('aria-pressed', 'false'));
+    sim.hidden = true; document.getElementById('dropMsg').textContent = 'JPG o PNG. La foto se adjunta a tu consulta para que podamos asesorarte.';
     pwork.classList.add('on');
-    status.textContent = sample ? 'Tocá «Ubicar la mampara con IA» o arrastrá los cuatro puntos hasta las esquinas de la ducha de tu baño.' : 'Arrastrá los cuatro puntos hasta las esquinas de la ducha de tu baño: arriba a la altura de la mampara, abajo sobre el piso o el borde de la bañera.';
+    status.textContent = (sample ? 'Tocá «Ubicar la mampara con IA» o arrastrá' : 'Arrastrá') + ' los cuatro puntos hasta las esquinas de la ducha de tu baño. Después contanos cómo es tu ducha para recomendarte un modelo.';
     dl.push({event:'probador_foto'});
     pwork.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'});
   }
   const input = document.getElementById('foto'), drop = document.getElementById('drop');
-  input.addEventListener('change', () => loadFile(input.files[0]));
+  input.addEventListener('change', () => { loadFile(input.files[0]); input.value = ''; });
   ['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
   ['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
   drop.addEventListener('drop', e => loadFile(e.dataTransfer.files[0]));
-  document.getElementById('resetBtn').addEventListener('click', () => { quad = DEF.map(p => p.slice()); render(); });
+  document.getElementById('resetBtn').addEventListener('click', () => { quad = DEF.map(p => p.slice()); render(); updateSim(); });
 
-  // IA: ubicar la ducha y recomendar un modelo
+  // datos que se adjuntan a la consulta (los usa el formulario)
+  window.vitrovaProbador = {
+    async adjuntos() {
+      if (!photoCanvas) return null;
+      const fit = (cv, max) => { const s = Math.min(1, max / Math.max(cv.width, cv.height)); const o = document.createElement('canvas'); o.width = Math.round(cv.width * s); o.height = Math.round(cv.height * s); o.getContext('2d').drawImage(cv, 0, 0, o.width, o.height); return o; };
+      const k = current();
+      let side = 1000, q = .72, foto, simu;
+      for (let i = 0; i < 5; i++) {
+        foto = toJpeg(fit(photoCanvas, side), q);
+        const c = composite(k, side); simu = c ? toJpeg(c, q) : '';
+        if (foto.length + simu.length < 850000) break;
+        side = Math.round(side * .8); q = Math.max(.5, q - .06);
+      }
+      return { foto, simulacion: simu, modelo_probado: nameOf(k), herrajes: color.n, recomendado: nameOf(recom), motivo_recomendacion: recomMsg, esquinas: quad.flat().map(n => +n.toFixed(4)) };
+    }
+  };
+
+  // IA (solo disponible dentro de Claude): ubicar la ducha y recomendar un modelo
   let sample = null;
   const aiBtn = document.getElementById('aiBtn');
   if (window.claude && window.claude.use) {
@@ -618,7 +803,7 @@ footer .legal{border-top:1px solid #4a3a31;margin-top:36px;padding-top:20px;font
     aiBtn.classList.add('busy'); aiBtn.disabled = true;
     status.textContent = 'Analizando tu foto…';
     const prompt = `Sos un asesor de Vitrova, fabricante de mamparas de baño. Analizá la foto adjunta de un baño.
-Ubicá el frente de la ducha o bañera donde iría la mampara (la abertura de la ducha o el borde de la bañera, visto desde la cámara).
+Ubicá el frente de la ducha o bañera donde iría la mampara, visto desde la cámara.
 Devolvé SOLO un objeto JSON, sin texto extra, con este formato:
 {"encontrado": true|false,
  "esquinas": {"si":[x,y], "sd":[x,y], "id":[x,y], "ii":[x,y]},
@@ -635,20 +820,19 @@ Criterio: bañera -> rebatible o corrediza; ducha en rincón con dos lados abier
       const e = r && r.esquinas;
       if (r && r.encontrado && e && [e.si, e.sd, e.id, e.ii].every(ok01)) {
         quad = [e.si, e.sd, e.id, e.ii].map(p => p.slice());
-        recom = TYPES.some(t => t.k === r.recomendada) ? r.recomendada : null;
-        tiles.forEach(t => t.querySelector('em').hidden = t.dataset.k !== recom);
-        const nm = recom ? TYPES.find(t => t.k === recom).n : '';
-        let msg = recom ? `Te recomendamos <b>${nm}</b>${r.motivo ? ': ' + String(r.motivo).replace(/[<>]/g, '') : '.'}` : 'Ubicamos la ducha de tu baño.';
+        const k = TYPES.some(t => t.k === r.recomendada) ? r.recomendada : null;
+        const motivo = r.motivo ? String(r.motivo).replace(/[<>]/g, '') : '';
+        let msg = k ? `Te recomendamos <b>${nameOf(k)}</b>${motivo ? ': ' + motivo : '.'}` : 'Ubicamos la ducha de tu baño.';
         if (Number.isFinite(r.ancho_cm) && r.ancho_cm > 40 && r.ancho_cm < 260) {
           const a = Math.round(r.ancho_cm / 5) * 5; document.getElementById('ancho').value = a;
           msg += ` Ancho estimado: <b>${a} cm</b> (confirmalo con el metro).`;
         }
         status.innerHTML = msg + ' Si hace falta, ajustá los puntos a mano.';
-        dl.push({event:'probador_ia', recomendada: nm});
+        if (k) setRecom(k, motivo); else { render(); updateSim(); }
+        dl.push({event:'probador_recomendacion', recomendada: nameOf(k), origen:'ia'});
       } else {
         status.textContent = 'No pudimos ubicar la ducha de tu baño en esta foto. Arrastrá los cuatro puntos a mano o probá con una foto más de frente.';
       }
-      render();
     } catch (err) {
       status.textContent = err && err.code === 'rate_limited' ? 'Hay muchas consultas en este momento. Probá de nuevo en unos minutos o ajustá los puntos a mano.' : 'La ubicación automática no está disponible ahora. Ajustá los cuatro puntos a mano.';
       if (err && err.code === 'not_granted') aiBtn.hidden = true;
@@ -656,5 +840,31 @@ Criterio: bañera -> rebatible o corrediza; ducha en rincón con dos lados abier
   });
 }
 </script>
+<!-- Firebase: pegá acá la configuración de tu proyecto (Configuración del proyecto > Tus apps > Web) -->
+<script type="module">
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyCBzPsYFF3UiFqd57RfTJnw4vMGk5eA5Ew",
+    authDomain: "vitrova-5ee6f.firebaseapp.com",
+    projectId: "vitrova-5ee6f",
+    storageBucket: "vitrova-5ee6f.firebasestorage.app",
+    messagingSenderId: "159754036602",
+    appId: "1:159754036602:web:aa1ca711c8576c3b28e2c3",
+    measurementId: "G-GGM3D67JBQ"
+  };
+  /* Ejemplo:
+  const FIREBASE_CONFIG = {
+    apiKey: "...", authDomain: "tu-proyecto.firebaseapp.com", projectId: "tu-proyecto",
+    storageBucket: "tu-proyecto.appspot.com", messagingSenderId: "...", appId: "..."
+  }; */
+  if (FIREBASE_CONFIG) {
+    try {
+      const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
+      const { getFirestore, collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+      const db = getFirestore(initializeApp(FIREBASE_CONFIG));
+      window.vitrovaGuardar = async (datos) => (await addDoc(collection(db, 'consultas'), { ...datos, estado: 'nueva', creado: serverTimestamp() })).id;
+    } catch (e) { console.warn('Firebase no disponible', e); }
+  }
+</script>
 </body>
+
 </html>
